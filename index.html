@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech Converter</title>
+    <style>
+            body {
+            font-family: Arial, sans-serif;
+            background-image: url(https://media.istockphoto.com/id/458618439/photo/google-internet-search-website.jpg?s=2048x2048&w=is&k=20&c=YxXHnAgXtcxt7e8XpF46OdHPpzRo5ZbN7YAN8S_qpUI=); /* Specify your background image URL here */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 400px;
+        }
+
+        h1 {
+            color: #007bff;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 18px;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #audio-controls {
+            margin-top: 20px;
+        }
+
+        #audio-controls audio {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Text to Speech Converter</h1>
+        <label for="text">Enter Text:</label>
+        <textarea id="text" placeholder="Enter text to convert to speech"></textarea>
+        <label for="voices">Select Voice:</label>
+        <select id="voices"></select>
+        <button id="speakButton">Speak</button>
+        <div id="audio-controls">
+            <audio id="audio" controls></audio>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const textInput = document.getElementById('text');
+            const voicesSelect = document.getElementById('voices');
+            const speakButton = document.getElementById('speakButton');
+            const audioElement = document.getElementById('audio');
+
+            function populateVoices() {
+                const voices = speechSynthesis.getVoices();
+                voicesSelect.innerHTML = voices
+                    .map((voice, index) => `<option value="${index}">${voice.name} (${voice.lang})</option>`)
+                    .join('');
+            }
+
+            speechSynthesis.onvoiceschanged = () => {
+                populateVoices();
+            };
+
+            speakButton.addEventListener('click', () => {
+                const selectedVoiceIndex = voicesSelect.value;
+                const selectedVoice = speechSynthesis.getVoices()[selectedVoiceIndex];
+                const textToSpeak = textInput.value;
+
+                if (textToSpeak) {
+                    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                    utterance.voice = selectedVoice;
+                    speechSynthesis.speak(utterance);
+                    audioElement.src = `data:audio/wav;base64,${btoa(textToSpeak)}`;
+                    audioElement.play();
+                }
+            });
+
+            populateVoices();
+        });
+    </script>
+</body>
+</html>
